@@ -20,12 +20,12 @@ impl List {
     }
 
     pub fn push(&mut self, elem: i32) {
-        let new_node = Box::new(Node {
+        let first = Box::new(Node {
             elem: elem,
             next: mem::replace(&mut self.head, Link::Empty),
         });
 
-        self.head = Link::More(new_node);
+        self.head = Link::More(first);
     }
 
     pub fn pop(&mut self) -> Option<i32> {
@@ -41,10 +41,10 @@ impl List {
 
 impl Drop for List {
     fn drop(&mut self) {
-        let mut cur_link = mem::replace(&mut self.head, Link::Empty);
+        let mut link = mem::replace(&mut self.head, Link::Empty);
 
-        while let Link::More(mut node) = cur_link {
-            cur_link = mem::replace(&mut node.next, Link::Empty)
+        while let Link::More(mut node) = link {
+            link = mem::replace(&mut node.next, Link::Empty)
         }
     }
 }
@@ -54,10 +54,9 @@ mod test {
     use super::List;
 
     #[test]
-    fn basics() {
+    fn basic() {
         let mut list = List::new();
 
-        // check empty behaviour
         assert_eq!(list.pop(), None);
 
         list.push(1);
@@ -72,7 +71,6 @@ mod test {
 
         assert_eq!(list.pop(), Some(5));
         assert_eq!(list.pop(), Some(4));
-
         assert_eq!(list.pop(), Some(1));
         assert_eq!(list.pop(), None);
     }
